@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เกมขุดเหมือง</title>
+<style>
+:root{--bg:#f3efe6;--panel:#fffdf8;--ink:#201c14;--mute:#7a7364;--line:#e2dccb;--gold:#b8860b;--btn:#c9762b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15120d;--panel:#1e1a12;--ink:#f3ecd8;--mute:#9a927c;--line:#332e20;--gold:#f2c230;--btn:#e08a3a}}
+:root[data-theme="dark"]{--bg:#15120d;--panel:#1e1a12;--ink:#f3ecd8;--mute:#9a927c;--line:#332e20;--gold:#f2c230;--btn:#e08a3a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai","Sarabun",system-ui,sans-serif;padding:16px;max-width:520px;margin:0 auto;text-align:center}
+h1{font-size:22px;margin:8px 0 4px}
+p{color:var(--mute);margin:4px 0 14px;font-size:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+input{font:inherit;width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-align:center;margin-bottom:12px}
+button{font:600 16px inherit;font-family:inherit;padding:12px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.p{background:var(--btn);border-color:var(--btn);color:#fff;width:100%}
+.bar{display:flex;justify-content:space-between;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:10px}
+.bar b{color:var(--gold)}
+.tl{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:18px}
+#tf{height:100%;width:100%;background:var(--btn)}
+#mine{width:210px;height:210px;border-radius:50%;font-size:84px;line-height:1;background:var(--btn);border:6px solid var(--gold);color:#fff;user-select:none;-webkit-user-select:none;transition:transform .05s}
+#mine:active{transform:scale(.93)}
+#last{height:36px;margin:14px 0 6px;font-size:22px;font-weight:700}
+#cnt{font-size:15px;color:var(--mute)}
+.big{font-size:44px;font-weight:700;color:var(--gold);margin:6px 0}
+.row{display:flex;justify-content:space-between;padding:7px 4px;border-bottom:1px dashed var(--line);font-size:16px}
+.acts{display:grid;gap:10px;margin-top:14px}
+#box{width:100%;height:150px;margin-top:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:13px inherit;font-family:inherit;padding:8px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<h1>⛏️ เกมขุดเหมือง</h1>
+
+<div id="s1" class="card">
+  <p>มีเวลา 5 วินาที กดขุดให้ได้มากที่สุด<br>แร่ยิ่งหายาก ยิ่งได้เหรียญเยอะ</p>
+  <input id="nm" maxlength="20" placeholder="ใส่ชื่อของคุณ" aria-label="ชื่อผู้เล่น">
+  <button class="p" onclick="start()">เริ่มขุด!</button>
+  <div id="cd" style="margin-top:10px;font-size:14px;color:var(--mute)"></div>
+</div>
+
+<div id="s2" hidden>
+  <div class="bar"><span>⏱ <span id="tt">5.0</span> วิ</span><span>💰 <b id="sc">0</b></span></div>
+  <div class="tl"><div id="tf"></div></div>
+  <button id="mine" aria-label="ขุด">⛏️</button>
+  <div id="last"></div>
+  <div id="cnt"></div>
+</div>
+
+<div id="s3" class="card" hidden>
+  <div id="rn" style="font-weight:700"></div>
+  <div class="big" id="tot"></div>
+  <div id="list"></div>
+  <div class="acts">
+    <button class="p" onclick="copySum()">📋 คัดลอกสรุป เพื่อไปวางในแชท</button>
+    <button onclick="again()">เล่นอีกครั้ง</button>
+  </div>
+  <div id="cmsg" style="margin-top:8px;font-size:14px;color:var(--mute)"></div>
+  <textarea id="box" hidden readonly></textarea>
+</div>
+
+<details class="card" style="margin-top:16px;text-align:left"><summary>🔍 สำหรับแอดมิน: ตรวจผลที่เพื่อนส่งมา</summary>
+  <textarea id="vin" placeholder="วางข้อความสรุปที่เพื่อนส่งมา" style="width:100%;height:110px;margin-top:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;padding:8px"></textarea>
+  <input id="vwho" placeholder="ชื่อ Discord ของคนที่ส่งมา (ไม่ใส่ก็ได้)" style="margin-top:8px;margin-bottom:0">
+  <button class="p" style="margin-top:8px" onclick="verify()">ตรวจ</button>
+  <div id="vout" style="margin-top:10px;font-weight:600"></div>
+</details>
+
+<script>
+// ปรับค่าได้ตรงนี้: v = เหรียญที่ได้ต่อแร่, w = โอกาสเจอ (ยิ่งมากยิ่งเจอบ่อย)
+var ORES=[
+  {n:'หิน',e:'🪨',v:1,w:50},
+  {n:'ถ่าน',e:'⚫',v:2,w:25},
+  {n:'เหล็ก',e:'⛓️',v:5,w:15},
+  {n:'ทอง',e:'🪙',v:20,w:8},
+  {n:'เพชร',e:'💎',v:100,w:2}
+];
+var DUR=5,COOL=8,lastTap=0,stamp='',t0=0,run=false,score=0,taps=0,got=[],tm=null,player='';
+function $(i){return document.getElementById(i)}
+function pick(){var x=Math.random()*100,i;for(i=0;i<ORES.length;i++){x-=ORES[i].w;if(x<0)return i}return 0}
+function start(){
+  if(showCd()>0)return;
+  try{localStorage.setItem('lastPlay',Date.now())}catch(e){}
+  player=$('nm').value.trim()||'ไม่ระบุชื่อ';
+  score=0;taps=0;got=ORES.map(function(){return 0});
+  $('sc').textContent='0';$('last').textContent='';$('cnt').textContent='แตะปุ่มรัวๆ!';
+  $('s1').hidden=true;$('s3').hidden=true;$('s2').hidden=false;
+  t0=Date.now();run=true;
+  tm=setInterval(tick,100);
+}
+function tick(){
+  var left=Math.max(0,DUR-(Date.now()-t0)/1000);
+  $('tt').textContent=left.toFixed(1);
+  $('tf').style.width=(left/DUR*100)+'%';
+  if(left<=0)finish();
+}
+$('mine').addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  if(!run)return;
+  var now=Date.now();if(now-lastTap<60)return;lastTap=now;
+  var k=pick(),o=ORES[k];
+  got[k]++;taps++;score+=o.v;
+  $('sc').textContent=score;
+  $('last').textContent=o.e+' '+o.n+' +'+o.v;
+  $('cnt').textContent='กดแล้ว '+taps+' ครั้ง';
+});
+function finish(){
+  run=false;clearInterval(tm);stamp=Math.floor(Date.now()/1000).toString(36);
+  $('s2').hidden=true;$('s3').hidden=false;
+  $('rn').textContent='⛏️ '+player;
+  $('tot').textContent='💰 '+score.toLocaleString('en-US')+' เหรียญ';
+  var h='';
+  ORES.forEach(function(o,i){h+='<div class="row"><span>'+o.e+' '+o.n+'</span><span>× '+got[i]+'</span></div>'});
+  h+='<div class="row"><span>กดทั้งหมด</span><span>'+taps+' ครั้ง</span></div>';
+  $('list').innerHTML=h;
+  $('cmsg').textContent='';$('box').hidden=true;
+}
+function sumText(){
+  var d=new Date(parseInt(stamp,36)*1000).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'});
+  var s='⛏️ ผลขุดเหมือง: '+player+'\n💰 ได้ '+score.toLocaleString('en-US')+' เหรียญ ใน '+DUR+' วินาที (กด '+taps+' ครั้ง)\n';
+  ORES.forEach(function(o,i){if(got[i])s+=o.e+' '+o.n+' ×'+got[i]+'\n'});
+  return s+'🕒 '+d+'\n🔒 รหัส: '+stamp+'-'+H(player+'|'+score+'|'+stamp);
+}
+// เปลี่ยนคำว่า gold-secret-7Qx เป็นคำลับของคุณเอง (อย่าบอกเพื่อน)
+function H(s){var h=2166136261,i;s='gold-secret-7Qx'+s;for(i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+function verify(){
+  var t=$('vin').value,o=$('vout');
+  var n=t.match(/ผลขุดเหมือง:\s*(.+)/),sc=t.match(/ได้\s*([\d,]+)\s*เหรียญ/),c=t.match(/รหัส:\s*([0-9a-z]+)-([0-9a-z]+)/);
+  if(!n||!sc||!c){o.textContent='⚠️ อ่านข้อความไม่ได้ ไม่มีรหัสหรือรูปแบบไม่ครบ';return}
+  var nm=n[1].trim(),ok=H(nm+'|'+sc[1].replace(/,/g,'')+'|'+c[1])===c[2];
+  if(!ok){o.textContent='❌ ไม่ผ่าน: ชื่อหรือตัวเลขไม่ตรงกับรหัส มีการแก้ข้อความ';return}
+  var key=($('vwho').value.trim()||nm).toLowerCase(),ts=parseInt(c[1],36),when=new Date(ts*1000).toLocaleString('th-TH'),db={},gap=COOL*3600,i,dup=false,near=false;
+  try{db=JSON.parse(localStorage.getItem('paid')||'{}')}catch(e){}
+  var arr=db[key]||[];
+  for(i=0;i<arr.length;i++){if(arr[i]===ts)dup=true;else if(Math.abs(arr[i]-ts)<gap)near=true}
+  if(dup){o.textContent='🔁 ผลนี้ตรวจไปแล้ว ห้ามจ่ายซ้ำ ('+key+', '+when+')';return}
+  if(near){o.textContent='⛔ รหัสแท้ แต่ไม่ผ่านคูลดาวน์: '+key+' ส่งผลห่างจากรอบก่อนไม่ถึง '+COOL+' ชม.';return}
+  arr.push(ts);db[key]=arr;
+  try{localStorage.setItem('paid',JSON.stringify(db))}catch(e){}
+  o.textContent='✅ ผ่าน: '+nm+' ได้ '+sc[1]+' เหรียญ ('+when+')';
+}
+function copySum(){
+  var s=sumText(),b=$('box');
+  function fallback(){b.value=s;b.hidden=false;b.focus();b.select();$('cmsg').textContent='กดค้างที่ข้อความด้านล่าง แล้วเลือก คัดลอก ครับ'}
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(s).then(function(){$('cmsg').textContent='คัดลอกแล้ว! ไปวางในช่องแชทได้เลย'},fallback);
+    }else fallback();
+  }catch(e){fallback()}
+}
+function again(){$('s3').hidden=true;$('s1').hidden=false;showCd()}
+function cdLeft(){try{var l=+localStorage.getItem('lastPlay')||0;return Math.max(0,l+COOL*3600000-Date.now())}catch(e){return 0}}
+function fmt(ms){var m=Math.ceil(ms/60000),h=Math.floor(m/60);return (h?h+' ชม. ':'')+(m%60)+' นาที'}
+function showCd(){var l=cdLeft();$('cd').textContent=l>0?'⏳ คูลดาวน์ยังไม่ครบ เล่นได้อีกครั้งในอีก '+fmt(l):'';return l}
+showCd();
+</script>
+</body>
+</html>
