@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เกมขุดเหมือง</title>
+<style>
+:root{--bg1:#1a1426;--bg2:#31244a;--panel:#241b33;--panel2:#30244a;--ink:#f6efe0;--mute:#a99fba;--line:#46385f;--gold:#f2c230;--btn:#ff9a3c;--btn2:#e0561f;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg1:#f6e9d2;--bg2:#ecd5ae;--panel:#fff8ea;--panel2:#f8e8cb;--ink:#2a1d10;--mute:#7a6a54;--line:#dcc59d;--gold:#a87a08;color-scheme:light}}
+:root[data-theme="light"]{--bg1:#f6e9d2;--bg2:#ecd5ae;--panel:#fff8ea;--panel2:#f8e8cb;--ink:#2a1d10;--mute:#7a6a54;--line:#dcc59d;--gold:#a87a08;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:radial-gradient(circle at 20% 0%,var(--bg2),var(--bg1) 62%) fixed;color:var(--ink);font-family:"Noto Sans Thai","Sarabun",system-ui,sans-serif;padding:16px;max-width:520px;margin:0 auto;text-align:center;overflow-x:hidden;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(2px 2px at 20% 30%,rgba(242,194,48,.55),transparent),radial-gradient(2px 2px at 70% 20%,rgba(255,255,255,.4),transparent),radial-gradient(1.5px 1.5px at 40% 78%,rgba(94,224,240,.55),transparent),radial-gradient(2px 2px at 86% 64%,rgba(255,122,184,.45),transparent),radial-gradient(1.5px 1.5px at 10% 70%,rgba(242,194,48,.45),transparent);animation:dust 7s ease-in-out infinite alternate}
+@keyframes dust{from{transform:translateY(0)}to{transform:translateY(-16px)}}
+main{position:relative;z-index:1}
+.hd{padding:4px 0 12px}
+.logo{display:inline-block;font-size:46px;line-height:1;transform-origin:70% 80%;animation:swing 2.4s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
+h1{font-size:28px;margin:2px 0 0;font-weight:800;background:linear-gradient(90deg,#ffd86b,#ff9a3c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mute);margin:2px 0 0;font-size:14px}
+p{color:var(--mute);margin:4px 0 12px;font-size:14px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 14px}
+.chip{background:rgba(127,127,127,.12);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px}
+input{font:inherit;width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--ink);text-align:center;margin-bottom:12px}
+button{font:600 16px inherit;font-family:inherit;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(127,127,127,.14);color:var(--ink);cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.p{width:100%;border:0;color:#fff;font-size:18px;font-weight:800;padding:14px;border-radius:14px;background:linear-gradient(180deg,#ffb04a,#e0561f);box-shadow:0 6px 0 #9b3410,0 12px 20px rgba(0,0,0,.3)}
+.p:active{transform:translateY(4px);box-shadow:0 2px 0 #9b3410,0 6px 12px rgba(0,0,0,.3)}
+.bar{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;font-variant-numeric:tabular-nums}
+.pill{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:18px;font-weight:700;color:#fff}
+.pill b{color:var(--gold);font-size:20px}
+.tl{height:12px;background:rgba(0,0,0,.35);border-radius:6px;overflow:hidden;border:1px solid var(--line);margin-bottom:14px}
+#tf{height:100%;width:100%;background:linear-gradient(90deg,#ffd86b,#ff9a3c,#e0561f);border-radius:6px;transition:width .1s linear}
+#tf.low{animation:pulse .35s infinite alternate}
+@keyframes pulse{to{filter:brightness(1.7)}}
+#hint{display:inline-block;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:999px;padding:4px 16px;font-size:15px;font-weight:700;margin-bottom:14px;color:#fff}
+#mine{display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative;width:220px;height:220px;border-radius:50%;border:0;padding:0;color:#fff;user-select:none;-webkit-user-select:none;touch-action:none;background:radial-gradient(circle at 35% 30%,#ffd6a3,var(--btn) 45%,var(--btn2) 100%);box-shadow:0 0 0 6px var(--gold),0 0 0 11px rgba(242,194,48,.25),0 16px 30px rgba(0,0,0,.45),inset 0 -12px 22px rgba(0,0,0,.25);transition:transform .06s}
+#mine:active{transform:scale(.92)}
+#mine.bomb{background:radial-gradient(circle at 35% 30%,#ff9a8a,#d93025 55%,#7a1010);box-shadow:0 0 0 6px #ff8a7a,0 0 0 12px rgba(255,60,40,.35),0 0 44px rgba(255,60,40,.65);animation:wob .25s infinite}
+@keyframes wob{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+#face{font-size:98px;line-height:1;pointer-events:none;display:block;filter:drop-shadow(0 5px 6px rgba(0,0,0,.4))}
+.row2{display:flex;gap:10px;justify-content:center;margin-top:18px}
+#skip{flex:1;max-width:260px;touch-action:none;border-radius:999px}
+#mu{border-radius:999px}
+#last{height:32px;margin:12px 0 2px;font-size:20px;font-weight:700}
+#cnt{font-size:14px;color:var(--mute)}
+.big{font-size:48px;font-weight:800;color:var(--gold);margin:6px 0 12px;text-shadow:0 0 20px rgba(242,194,48,.45)}
+#list{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left}
+.row{display:flex;justify-content:space-between;padding:9px 12px;border-radius:12px;background:rgba(127,127,127,.12);border:1px solid var(--line);font-size:15px}
+.acts{display:grid;gap:10px;margin-top:16px}
+#box{width:100%;height:150px;margin-top:10px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.2);color:var(--ink);font:13px inherit;font-family:inherit;padding:8px}
+details.card{margin-top:16px;text-align:left;opacity:.9;font-size:14px}
+summary{color:var(--mute);cursor:pointer}
+#flash{position:fixed;inset:0;background:#ff2d1a;opacity:0;pointer-events:none;z-index:4}
+[hidden]{display:none!important}
+
+body[data-zone="1"]{--bg1:#14202c;--bg2:#2d4863}
+body[data-zone="2"]{--bg1:#2a1a08;--bg2:#6b4a12}
+body[data-zone="3"]{--bg1:#0d1030;--bg2:#1d6f8a}
+body.rush{--bg1:#4a3200;--bg2:#b88100}
+.bar2{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}
+.bar2 .chip{font-weight:700;color:#fff;background:rgba(0,0,0,.28)}
+.rushbar{background:linear-gradient(90deg,#ffd86b,#ff9a3c);color:#3a2300;font-weight:800;border-radius:999px;padding:6px 14px;margin-bottom:10px;animation:pulse .3s infinite alternate}
+#mine.spec{background:radial-gradient(circle at 35% 30%,#ffe9a8,#e0a84f 55%,#8a5a1a);box-shadow:0 0 0 6px #ffd86b,0 0 0 12px rgba(255,216,107,.35),0 0 34px rgba(255,216,107,.6)}
+.dg{position:fixed;inset:0;z-index:6;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px}
+.dg .card{max-width:360px;width:100%}
+#cv{width:100%;max-width:300px;height:auto;touch-action:none;background:rgba(0,0,0,.25);border-radius:14px;user-select:none;-webkit-user-select:none}
+</style>
+</head>
+<body>
+<div id="flash"></div>
+<div id="dg" class="dg" hidden><div class="card"><div id="dgt" style="font-weight:700;margin-bottom:10px"></div><canvas id="cv" width="300" height="300"></canvas><div id="dgm" style="margin-top:8px;color:var(--mute);font-size:14px"></div></div></div>
+<main>
+<header class="hd">
+  <span class="logo">⛏️</span>
+  <h1>เกมขุดเหมือง</h1>
+  <p class="sub">ขุดแร่ เก็บเหรียญ ระวังระเบิด!</p>
+</header>
+
+<div id="s1" class="card">
+  <div class="chips"><span class="chip">⏱ 10 วินาที</span><span class="chip">🔥 คอมโบ</span><span class="chip">🌟 ทองไหล</span><span class="chip">🍪 ลากตามรอย</span></div>
+  <p>ขุดต่อเนื่องไม่พลาดเพื่อสะสมคอมโบ ยิ่งลึกยิ่งเจอแร่หายากแต่ระเบิดก็เยอะ ถ้าเห็น 💣 ให้กด <b>ข้าม</b> ถ้าเจอ 🍪 ให้กดแล้ว <b>ลากนิ้วตามรอย</b>บนขนมให้ครบโดยไม่หลุด!</p>
+  <input id="nm" maxlength="20" placeholder="ใส่ชื่อของคุณ" aria-label="ชื่อผู้เล่น">
+  <button class="p" onclick="start()">⛏️ เริ่มขุด!</button>
+  <div id="cd" style="margin-top:12px;font-size:14px;color:var(--mute)"></div>
+</div>
+
+<div id="s2" hidden>
+  <div class="bar"><span class="pill">⏱ <span id="tt">10.0</span> วิ</span><span class="pill">💰 <b id="sc">0</b></span></div>
+  <div class="tl"><div id="tf"></div></div>
+  <div class="bar2"><span id="zone" class="chip"></span><span id="combo" class="chip"></span></div>
+  <div id="rush" class="rushbar" hidden>🌟 ทองไหล! เหรียญ ×2</div>
+  <div id="hint"></div>
+  <button id="mine" aria-label="ขุด"><span id="face">⛏️</span></button>
+  <div class="row2"><button id="skip">⏭ ข้าม</button><button id="mu" onclick="tg()" aria-label="เสียง">🔊</button></div>
+  <div id="last"></div>
+  <div id="cnt"></div>
+</div>
+
+<div id="s3" class="card" hidden>
+  <div id="rn" style="font-weight:700;font-size:18px"></div>
+  <div class="big" id="tot"></div>
+  <div id="list"></div>
+  <div class="acts">
+    <button id="snd" class="p" onclick="sendHook()" hidden>📨 ส่งผลเข้าห้อง Discord</button>
+    <button class="p" onclick="copySum()">📋 คัดลอกสรุป ไปวางในแชท</button>
+    <button onclick="again()">เล่นอีกครั้ง</button>
+  </div>
+  <div id="cmsg" style="margin-top:8px;font-size:14px;color:var(--mute)"></div>
+  <textarea id="box" hidden readonly></textarea>
+</div>
+
+<details class="card"><summary>🔍 สำหรับแอดมิน: ตรวจผลที่เพื่อนส่งมา</summary>
+  <textarea id="vin" placeholder="วางข้อความสรุปที่เพื่อนส่งมา" style="width:100%;height:110px;margin-top:10px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.2);color:var(--ink);font:inherit;padding:8px"></textarea>
+  <input id="vwho" placeholder="ชื่อ Discord ของคนที่ส่งมา (ไม่ใส่ก็ได้)" style="margin-top:8px;margin-bottom:0">
+  <button class="p" style="margin-top:10px;font-size:16px" onclick="verify()">ตรวจ</button>
+  <div id="vout" style="margin-top:10px;font-weight:600"></div>
+</details>
+</main>
+
+<script src="config.js"></script>
+<script>
+// ปรับค่าได้ตรงนี้
+// v = เหรียญต่อแร่ (ก่อนคูณคอมโบ/ทองไหล)
+var ORES=[
+  {n:'หิน',e:'🪨',v:1,c:'#c9c9c9'},
+  {n:'ถ่าน',e:'⚫',v:2,c:'#d0d0d0'},
+  {n:'เหล็ก',e:'⛓️',v:4,c:'#cfd8dc'},
+  {n:'ทอง',e:'🪙',v:10,c:'#f2c230'},
+  {n:'เพชร',e:'💎',v:40,c:'#5ee0f0'}
+];
+var BOMB={n:'ระเบิด',e:'💣',v:0,c:'#ff5a4d'};
+var SPEC={n:'ขนมพิเศษ',e:'🍪',v:0,c:'#ffd86b'};
+var ITEMS=ORES.concat([BOMB,SPEC]);   // ลำดับ: หิน ถ่าน เหล็ก ทอง เพชร ระเบิด ขนมพิเศษ
+// โอกาสเจอของแต่ละชั้น (ยิ่งลึกยิ่งเจอแร่หายากและระเบิดบ่อย)
+var ZONES=[
+  {name:'🪨 ชั้นหิน',w:[55,25,12,6,2,8,0]},
+  {name:'⛓️ ชั้นแร่เหล็ก',w:[40,25,18,10,3,10,4]},
+  {name:'🪙 ถ้ำทอง',w:[28,22,22,16,5,12,5]},
+  {name:'💎 ถ้ำคริสตัล',w:[18,18,24,24,10,16,6]}
+];
+var DUR=10,COOL=8,SKIP_LOCK=250,MAX_COINS=400;     // MAX_COINS = เพดานเหรียญต่อรอบ
+var BOMB_LOSS=.25,BOMB_MIN=10;                      // โดนระเบิดเสีย 25% ของเหรียญ (อย่างน้อย 10)
+var COMBO_STEP=6,COMBO_MULT=[1,1.25,1.5,2];         // ทุก 6 คอมโบ ตัวคูณเพิ่มขึ้น
+var RUSH_LEN=2000;                                  // ทองไหลนานกี่ ms (เหรียญ x2)
+var SHAPES=[{n:'วงกลม',v:40},{n:'สามเหลี่ยม',v:60},{n:'ดาว',v:90}];  // รางวัลขนมพิเศษ
+var DG_TIME=5000,DG_TOL=26;                         // เวลาลากสูงสุด (ms) และความคลาดเคลื่อนที่ยอมได้ (px)
+var lastTap=0,lock=0,stamp='',t0=0,run=false,score=0,taps=0,got=[],nxt=0,tm=null,player='',snd=true,ac=null;
+var zone=0,combo=0,maxCombo=0,rushAt=0,rushOn=false,specials=0;
+var dgOpen=false,dgEnd=0,dgPts=[],dgIdx=0,dgDown=false,dgShape=0,dgDone=false;
+function $(i){return document.getElementById(i)}
+function pick(){var w=ZONES[zone].w,tot=0,i,x;for(i=0;i<w.length;i++)tot+=w[i];x=Math.random()*tot;for(i=0;i<w.length;i++){x-=w[i];if(x<0)return i}return 0}
+function show(){
+  var it=ITEMS[nxt];
+  $('face').textContent=it.e;
+  $('mine').className=it===BOMB?'bomb':it===SPEC?'spec':'';
+  $('hint').textContent=it===BOMB?'⚠️ ระเบิด! กด ข้าม':it===SPEC?'🍪 ขนมพิเศษ! กดแล้วลากตามรอย':'ขุดเลย!';
+}
+
+// ---------- เสียง ----------
+function tone(f,d,type,vol,when){
+  if(!snd||!ac)return;
+  try{var o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+(when||0);
+    o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+    o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d)}catch(e){}
+}
+function oreSound(k){
+  if(k===0)tone(200,.08,'triangle',.18);
+  else if(k===1)tone(260,.08,'triangle',.18);
+  else if(k===2){tone(420,.07,'square',.08);tone(520,.07,'square',.06,.05)}
+  else if(k===3){tone(880,.18,'sine',.16);tone(1320,.22,'sine',.12,.08)}
+  else{tone(1047,.14,'sine',.15);tone(1319,.14,'sine',.15,.09);tone(1568,.14,'sine',.15,.18);tone(2093,.3,'sine',.14,.27)}
+}
+function boomSound(){tone(110,.45,'sawtooth',.28);tone(60,.55,'square',.22,.04)}
+function tg(){snd=!snd;$('mu').textContent=snd?'🔊':'🔇'}
+
+// ---------- เอฟเฟกต์ ----------
+function center(){var b=$('mine').getBoundingClientRect();return{x:b.left+b.width/2,y:b.top+b.height/2,top:b.top}}
+function fx(txt,color,big){
+  var c=center(),el=document.createElement('div');
+  el.textContent=txt;
+  el.style.cssText='position:fixed;left:'+c.x+'px;top:'+(c.top-6)+'px;font-weight:700;font-size:'+(big?36:26)+'px;color:'+color+';text-shadow:0 2px 6px rgba(0,0,0,.5);pointer-events:none;z-index:5';
+  document.body.appendChild(el);
+  var a=el.animate([{transform:'translate(-50%,0)',opacity:1},{transform:'translate(-50%,-80px)',opacity:0}],{duration:750,easing:'ease-out'});
+  a.onfinish=function(){el.remove()};
+}
+function burst(emoji,n){
+  var c=center(),i;
+  for(i=0;i<n;i++){
+    var el=document.createElement('div'),ang=Math.random()*6.283,d=60+Math.random()*80;
+    el.textContent=emoji;
+    el.style.cssText='position:fixed;left:'+c.x+'px;top:'+c.y+'px;font-size:'+(14+Math.random()*14)+'px;pointer-events:none;z-index:5';
+    document.body.appendChild(el);
+    var a=el.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(calc(-50% + '+Math.cos(ang)*d+'px),calc(-50% + '+Math.sin(ang)*d+'px)) scale(.4)',opacity:0}],{duration:450+Math.random()*350,easing:'ease-out'});
+    a.onfinish=(function(e){return function(){e.remove()}})(el);
+  }
+}
+function shake(){
+  document.body.animate([{transform:'translateX(0)'},{transform:'translateX(-12px)'},{transform:'translateX(12px)'},{transform:'translateX(-7px)'},{transform:'translateX(0)'}],{duration:350});
+  $('flash').animate([{opacity:.45},{opacity:0}],{duration:400});
+  try{if(navigator.vibrate)navigator.vibrate(120)}catch(e){}
+}
+
+// ---------- เกม ----------
+function cdLeft(){try{var l=+localStorage.getItem('lastPlay')||0;return Math.max(0,l+COOL*3600000-Date.now())}catch(e){return 0}}
+function fmt(ms){var m=Math.ceil(ms/60000),h=Math.floor(m/60);return (h?h+' ชม. ':'')+(m%60)+' นาที'}
+function showCd(){var l=cdLeft();$('cd').textContent=l>0?'⏳ คูลดาวน์ยังไม่ครบ เล่นได้อีกครั้งในอีก '+fmt(l):'';return l}
+function mult(){return COMBO_MULT[Math.min(COMBO_MULT.length-1,Math.floor(combo/COMBO_STEP))]}
+function cmb(){var m=mult();$('combo').textContent='🔥 คอมโบ ×'+combo+(m>1?' (x'+m+')':'');$('combo').style.opacity=combo>0?1:.6}
+function setZone(z){zone=z;document.body.dataset.zone=z;$('zone').textContent=ZONES[z].name}
+function gain(n){score=Math.max(0,Math.min(MAX_COINS,score+n));$('sc').textContent=score}
+function row(a,b){return '<div class="row"><span>'+a+'</span><span>'+b+'</span></div>'}
+function start(){
+  if(showCd()>0)return;
+  try{localStorage.setItem('lastPlay',Date.now())}catch(e){}
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.resume)ac.resume()}catch(e){ac=null}
+  player=$('nm').value.trim()||'ไม่ระบุชื่อ';
+  score=0;taps=0;lock=0;combo=0;maxCombo=0;specials=0;rushOn=false;
+  got=ITEMS.map(function(){return 0});
+  setZone(0);nxt=pick();show();cmb();
+  $('sc').textContent='0';$('last').textContent='';$('cnt').textContent='ดูแร่บนปุ่มแล้วกด!';
+  $('s1').hidden=true;$('s3').hidden=true;$('s2').hidden=false;$('rush').hidden=true;
+  t0=Date.now();rushAt=t0+2500+Math.random()*4000;run=true;
+  tm=setInterval(tick,100);
+}
+function tick(){
+  var now=Date.now(),el=(now-t0)/1000,left=Math.max(0,DUR-el);
+  $('tt').textContent=left.toFixed(1);
+  $('tf').style.width=(left/DUR*100)+'%';$('tf').className=left<3?'low':'';
+  var z=Math.min(ZONES.length-1,Math.floor(el/(DUR/ZONES.length)));
+  if(z!==zone){setZone(z);fx('⬇️ '+ZONES[z].name,'#fff',false);tone(180,.2,'sine',.12)}
+  var on=now>=rushAt&&now<rushAt+RUSH_LEN;
+  if(on!==rushOn){
+    rushOn=on;document.body.classList.toggle('rush',on);$('rush').hidden=!on;
+    if(on){tone(660,.12,'square',.1);tone(990,.2,'square',.1,.1)}
+  }
+  if(dgOpen&&!dgDone&&now>dgEnd)dgFail('หมดเวลา!');
+  if(left<=0)finish();
+}
+$('mine').addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  if(!run||dgOpen)return;
+  var now=Date.now();
+  if(now<lock||now-lastTap<60)return;
+  lastTap=now;
+  var it=ITEMS[nxt];
+  if(it===SPEC){openDg();return}
+  taps++;got[nxt]++;
+  if(it===BOMB){
+    var loss=Math.min(score,Math.max(BOMB_MIN,Math.round(score*BOMB_LOSS)));
+    gain(-loss);combo=0;
+    fx('💥 -'+loss,it.c,true);burst('💥',8);boomSound();shake();
+    $('last').textContent='💥 โดนระเบิด -'+loss;
+  }else{
+    combo++;if(combo>maxCombo)maxCombo=combo;
+    var m=mult()*(rushOn?2:1),g=Math.max(1,Math.round(it.v*m));
+    gain(g);
+    fx('+'+g,rushOn?'#ffd86b':it.c,it.v>=10);burst(it.e,it.v>=10?10:4);oreSound(nxt);
+    $('last').textContent=it.e+' '+it.n+' +'+g+(m>1?' (x'+m+')':'');
+  }
+  cmb();$('cnt').textContent='กดแล้ว '+taps+' ครั้ง';
+  nxt=pick();show();
+  try{$('face').animate([{transform:'scale(1.3) rotate(-8deg)'},{transform:'scale(1) rotate(0)'}],{duration:140})}catch(e){}
+});
+$('skip').addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  if(!run||dgOpen)return;
+  var now=Date.now();
+  if(now<lock)return;
+  lock=now+SKIP_LOCK;
+  if(ITEMS[nxt]!==BOMB&&ITEMS[nxt]!==SPEC){combo=0;cmb()}   // ข้ามระเบิดไม่ขาดคอมโบ แต่ข้ามของดีขาด
+  tone(300,.06,'triangle',.08);
+  $('last').textContent='⏭ ข้าม';
+  nxt=pick();show();
+});
+
+// ---------- แร่พิเศษ: ลากตามรอยขนม (สไตล์ Squid Game) ----------
+function shapePts(k){
+  var P=[],i,j,a,r,V,c=150;
+  function seg(p,q,m){for(j=0;j<m;j++)P.push([p[0]+(q[0]-p[0])*j/m,p[1]+(q[1]-p[1])*j/m])}
+  if(k===0){
+    for(i=0;i<=120;i++){a=-Math.PI/2+i/120*6.2832;P.push([c+95*Math.cos(a),c+95*Math.sin(a)])}
+  }else if(k===1){
+    V=[[150,45],[245,225],[55,225],[150,45]];
+    for(i=0;i<3;i++)seg(V[i],V[i+1],40);
+    P.push(V[3]);
+  }else{
+    V=[];
+    for(i=0;i<10;i++){a=-Math.PI/2+i*Math.PI/5;r=i%2?45:108;V.push([c+r*Math.cos(a),c+r*Math.sin(a)])}
+    V.push(V[0]);
+    for(i=0;i<10;i++)seg(V[i],V[i+1],20);
+    P.push(V[10]);
+  }
+  return P;
+}
+function drawDg(){
+  var g=$('cv').getContext('2d'),i,p;
+  g.clearRect(0,0,300,300);
+  g.lineJoin='round';g.lineCap='round';
+  g.beginPath();g.moveTo(dgPts[0][0],dgPts[0][1]);for(i=1;i<dgPts.length;i++)g.lineTo(dgPts[i][0],dgPts[i][1]);g.closePath();
+  g.fillStyle='#e0a84f';g.fill();
+  g.lineWidth=8;g.strokeStyle='#6b3f10';g.stroke();
+  if(dgIdx>0){g.lineWidth=8;g.strokeStyle='#fff6c8';g.beginPath();g.moveTo(dgPts[0][0],dgPts[0][1]);for(i=1;i<=dgIdx;i++)g.lineTo(dgPts[i][0],dgPts[i][1]);g.stroke()}
+  p=dgPts[dgIdx];
+  g.fillStyle='#f2c230';g.beginPath();g.arc(p[0],p[1],11,0,6.2832);g.fill();
+  g.lineWidth=3;g.strokeStyle='#fff';g.stroke();
+}
+function cpos(e){var r=$('cv').getBoundingClientRect();return[(e.clientX-r.left)*300/r.width,(e.clientY-r.top)*300/r.height]}
+function openDg(){
+  dgShape=Math.floor(Math.random()*SHAPES.length);
+  dgPts=shapePts(dgShape);dgIdx=0;dgDown=false;dgDone=false;
+  dgOpen=true;dgEnd=Date.now()+DG_TIME;
+  $('dgt').textContent='🍪 ลาก'+SHAPES[dgShape].n+'ตามรอยให้ครบ รับ +'+SHAPES[dgShape].v+' เหรียญ';
+  $('dgm').textContent='เริ่มลากจากจุดสีทอง อย่าให้หลุดรอย! (มีเวลา '+(DG_TIME/1000)+' วิ)';
+  $('dg').hidden=false;drawDg();tone(500,.08,'triangle',.1);
+}
+function dgClose(){dgOpen=false;dgDown=false;$('dg').hidden=true}
+function dgWin(){
+  if(dgDone)return;dgDone=true;
+  var v=SHAPES[dgShape].v;
+  gain(v);specials++;got[6]++;taps++;combo++;if(combo>maxCombo)maxCombo=combo;cmb();
+  fx('🍪 +'+v,'#ffd86b',true);burst('🍪',12);oreSound(4);
+  $('last').textContent='🍪 ลาก'+SHAPES[dgShape].n+'สำเร็จ +'+v;
+  $('dgm').textContent='สำเร็จ! +'+v;
+  setTimeout(function(){dgClose();nxt=pick();show()},450);
+}
+function dgFail(msg){
+  if(dgDone)return;dgDone=true;combo=0;cmb();
+  boomSound();shake();
+  $('last').textContent='🍪 ขนมแตก! ไม่ได้อะไร';
+  $('dgm').textContent='💥 '+msg;
+  setTimeout(function(){dgClose();nxt=pick();show()},550);
+}
+$('cv').addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  if(!dgOpen||dgDone)return;
+  var p=cpos(e),s=dgPts[dgIdx];
+  if(Math.hypot(p[0]-s[0],p[1]-s[1])>36){$('dgm').textContent='เริ่มที่จุดสีทองก่อนนะ';return}
+  dgDown=true;try{this.setPointerCapture(e.pointerId)}catch(x){}
+});
+$('cv').addEventListener('pointermove',function(e){
+  if(!dgDown||!dgOpen||dgDone)return;
+  var p=cpos(e),best=-1,bd=1e9,i,d,lo=Math.max(0,dgIdx-3),hi=Math.min(dgPts.length-1,dgIdx+14);
+  for(i=lo;i<=hi;i++){d=Math.hypot(p[0]-dgPts[i][0],p[1]-dgPts[i][1]);if(d<bd){bd=d;best=i}}
+  if(bd>DG_TOL){dgFail('หลุดรอย ขนมแตก!');return}
+  if(best>dgIdx)dgIdx=best;
+  drawDg();
+  if(dgIdx>=dgPts.length-3)dgWin();
+});
+['pointerup','pointercancel'].forEach(function(ev){$('cv').addEventListener(ev,function(){dgDown=false})});
+
+function finish(){
+  run=false;clearInterval(tm);dgClose();
+  document.body.classList.remove('rush');document.body.dataset.zone='0';$('rush').hidden=true;
+  stamp=Math.floor(Date.now()/1000).toString(36);
+  $('s2').hidden=true;$('s3').hidden=false;
+  $('rn').textContent='⛏️ '+player;
+  $('tot').textContent='💰 '+score.toLocaleString('en-US')+' เหรียญ';
+  var h='';
+  ITEMS.forEach(function(o,i){h+=row(o.e+' '+o.n,'× '+got[i])});
+  h+=row('🔥 คอมโบสูงสุด','×'+maxCombo)+row('⬇️ ลึกสุด',ZONES[zone].name)+row('กดทั้งหมด',taps+' ครั้ง');
+  $('list').innerHTML=h;
+  $('cmsg').textContent='';$('box').hidden=true;
+  var sb=$('snd');sb.hidden=!hasHook();sb.disabled=false;sb.textContent='📨 ส่งผลเข้าห้อง Discord';
+}
+function H(s){var h=2166136261,i;s='gold-secret-7Qx'+s;for(i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+function sumText(){
+  var d=new Date(parseInt(stamp,36)*1000).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'});
+  var s='⛏️ ผลขุดเหมือง: '+player+'\n💰 ได้ '+score.toLocaleString('en-US')+' เหรียญ ใน '+DUR+' วินาที (กด '+taps+' ครั้ง)\n';
+  ITEMS.forEach(function(o,i){if(got[i])s+=o.e+' '+o.n+' ×'+got[i]+'\n'});
+  s+='🔥 คอมโบสูงสุด ×'+maxCombo+'\n⬇️ ถึง '+ZONES[zone].name+'\n';
+  return s+'🕒 '+d+'\n🔒 รหัส: '+stamp+'-'+H(player+'|'+score+'|'+stamp);
+}
+// ส่งผลเข้า Webhook (ลิงก์อยู่ในไฟล์ config.js ถ้าไม่มีไฟล์นี้ ปุ่มจะไม่ขึ้น)
+function hasHook(){return typeof WEBHOOK_URL==='string'&&/^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//.test(WEBHOOK_URL)}
+function sendHook(){
+  var b=$('snd');
+  if(b.disabled||!hasHook())return;
+  b.disabled=true;b.textContent='กำลังส่ง...';
+  fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'เกมขุดเหมือง',content:sumText(),allowed_mentions:{parse:[]}})})
+    .then(function(r){if(!r.ok)throw new Error(r.status);b.textContent='✅ ส่งเข้าห้องแล้ว!'})
+    .catch(function(){b.disabled=false;b.textContent='❌ ส่งไม่สำเร็จ กดลองใหม่'});
+}
+function copySum(){
+  var s=sumText(),b=$('box');
+  function fb(){b.value=s;b.hidden=false;b.focus();b.select();$('cmsg').textContent='กดค้างที่ข้อความด้านล่าง แล้วเลือก คัดลอก ครับ'}
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(function(){$('cmsg').textContent='คัดลอกแล้ว! ไปวางในช่องแชทได้เลย'},fb)}else fb();
+  }catch(e){fb()}
+}
+function verify(){
+  var t=$('vin').value,o=$('vout');
+  var n=t.match(/ผลขุดเหมือง:\s*(.+)/),sc=t.match(/ได้\s*([\d,]+)\s*เหรียญ/),c=t.match(/รหัส:\s*([0-9a-z]+)-([0-9a-z]+)/);
+  if(!n||!sc||!c){o.textContent='⚠️ อ่านข้อความไม่ได้ ไม่มีรหัสหรือรูปแบบไม่ครบ';return}
+  var nm=n[1].trim(),ok=H(nm+'|'+sc[1].replace(/,/g,'')+'|'+c[1])===c[2];
+  if(!ok){o.textContent='❌ ไม่ผ่าน: ชื่อหรือตัวเลขไม่ตรงกับรหัส มีการแก้ข้อความ';return}
+  var key=($('vwho').value.trim()||nm).toLowerCase(),ts=parseInt(c[1],36),when=new Date(ts*1000).toLocaleString('th-TH'),db={},gap=COOL*3600,i,dup=false,near=false;
+  try{db=JSON.parse(localStorage.getItem('paid')||'{}')}catch(e){}
+  var arr=db[key]||[];
+  for(i=0;i<arr.length;i++){if(arr[i]===ts)dup=true;else if(Math.abs(arr[i]-ts)<gap)near=true}
+  if(dup){o.textContent='🔁 ผลนี้ตรวจไปแล้ว ห้ามจ่ายซ้ำ ('+key+', '+when+')';return}
+  if(near){o.textContent='⛔ รหัสแท้ แต่ไม่ผ่านคูลดาวน์: '+key+' ส่งผลห่างจากรอบก่อนไม่ถึง '+COOL+' ชม.';return}
+  arr.push(ts);db[key]=arr;
+  try{localStorage.setItem('paid',JSON.stringify(db))}catch(e){}
+  o.textContent='✅ ผ่าน: '+nm+' ได้ '+sc[1]+' เหรียญ ('+when+')';
+}
+function again(){$('s3').hidden=true;$('s1').hidden=false;showCd()}
+showCd();
+</script>
+</body>
+</html>
